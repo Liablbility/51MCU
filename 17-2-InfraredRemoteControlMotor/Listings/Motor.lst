@@ -1,0 +1,74 @@
+C51 COMPILER V9.60.7.0   MOTOR                                                             03/18/2024 10:14:50 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MOTOR
+OBJECT MODULE PLACED IN .\Objects\Motor.obj
+COMPILER INVOKED BY: D:\Programing\Keil5\C51\BIN\C51.EXE Motor.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Lis
+                    -tings\Motor.lst) TABS(2) OBJECT(.\Objects\Motor.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Timer1.h"
+   3          #include "Key.h"
+   4          
+   5          sbit M = P1^0;
+   6          
+   7          unsigned char Counter,Compare;
+   8          
+   9          void Motor_Init()
+  10          {
+  11   1        M = 0;
+  12   1        Timer1_Init();
+  13   1      }
+  14          
+  15          void Motor_SetSpeed(unsigned char Speed)
+  16          {
+  17   1        Compare = Speed * 50;
+  18   1      }
+  19          
+  20          void Timer1_Routine() interrupt 3
+  21          {   
+  22   1          static unsigned int T0Count,T1Count;
+  23   1          TL1 = 0xA4;       //设置定时初始值
+  24   1          TH1 = 0xFF;       //设置定时初始值
+  25   1          Counter++;
+  26   1          Counter %= 200;
+  27   1          if(Counter < Compare)
+  28   1          {
+  29   2            M = 1;
+  30   2          }
+  31   1          else
+  32   1          {
+  33   2            M = 0;
+  34   2          }
+  35   1          T0Count++;
+  36   1          if(T0Count >200)
+  37   1          {
+  38   2            T0Count= 0;
+  39   2            KeyLoop();
+  40   2          }
+  41   1          T1Count++;
+  42   1          if(T1Count > 10)
+  43   1          {
+  44   2            T1Count= 0;
+  45   2            DigitalTubeLoop();
+*** WARNING C206 IN LINE 45 OF Motor.c: 'DigitalTubeLoop': missing function-prototype
+  46   2          } 
+  47   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    151    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.7.0   MOTOR                                                             03/18/2024 10:14:50 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

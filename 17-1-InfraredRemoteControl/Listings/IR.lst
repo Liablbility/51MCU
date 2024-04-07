@@ -1,0 +1,139 @@
+C51 COMPILER V9.60.7.0   IR                                                                03/17/2024 22:25:04 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE IR
+OBJECT MODULE PLACED IN .\Objects\IR.obj
+COMPILER INVOKED BY: D:\Programing\Keil5\C51\BIN\C51.EXE IR.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listin
+                    -gs\IR.lst) TABS(2) OBJECT(.\Objects\IR.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Int0.h"
+   3          #include "Timer0.h"
+   4          
+   5          unsigned int IR_Time;
+   6          unsigned char IR_State;
+   7          
+   8          unsigned char IR_Data[4];
+   9          unsigned char IR_pData;
+  10          
+  11          unsigned char IR_DataFlag;
+  12          unsigned char IR_ReSentFlag;
+  13          unsigned char IR_Address,IR_Command;
+  14          
+  15          void IR_Init()
+  16          {
+  17   1        Timer0_Init();
+  18   1        Int0_Init();
+  19   1      }
+  20          
+  21          unsigned char IR_GetDataFlag()
+  22          {
+  23   1        if(IR_DataFlag)
+  24   1        {
+  25   2          IR_DataFlag = 0;
+  26   2          return 1;
+  27   2        }
+  28   1        return 0;
+  29   1      }
+  30          
+  31          unsigned char IR_GetReSentFlag()
+  32          {
+  33   1        if(IR_ReSentFlag)
+  34   1        {
+  35   2          IR_ReSentFlag = 0;
+  36   2          return 1;
+  37   2        }
+  38   1        return 0;
+  39   1      }
+  40          
+  41          unsigned char IR_GetAddress()
+  42          {
+  43   1        return IR_Address;
+  44   1      }
+  45          
+  46          unsigned char IR_GetCommand()
+  47          {
+  48   1        return IR_Command;
+  49   1      }
+  50          
+  51          void Int0_Rountine() interrupt 0
+  52          {
+  53   1        if(IR_State == 0)
+  54   1        {
+C51 COMPILER V9.60.7.0   IR                                                                03/17/2024 22:25:04 PAGE 2   
+
+  55   2          Timer0_SetCounter(0);
+  56   2          Timer0_Run(1);
+  57   2          IR_State = 1;
+  58   2        }
+  59   1        else if(IR_State == 1)
+  60   1        {
+  61   2          IR_Time = Timer0_GetCounter();
+  62   2          Timer0_SetCounter(0);
+  63   2          if(IR_Time > (13500-500)/1.085 && IR_Time < (13500+500)/1.085)
+  64   2            IR_State = 2;
+  65   2          else if(IR_Time > (11250-500)/1.085 && IR_Time < (11250+500)/1.085)
+  66   2          {
+  67   3            IR_ReSentFlag = 1;
+  68   3            Timer0_Run(0);
+  69   3            IR_State = 0;
+  70   3          }else//如果重发信号也出错了，还是回到起始状态
+  71   2          {
+  72   3            IR_State = 1;
+  73   3          }
+  74   2        }
+  75   1        else if(IR_State == 2)//开始解码
+  76   1        {
+  77   2          IR_Time = Timer0_GetCounter();
+  78   2          Timer0_SetCounter(0);
+  79   2          if(IR_Time > 1120-500 && IR_Time < 1200+500)
+  80   2          {
+  81   3            IR_Data[IR_pData/8] &=~ (0x01<<(IR_pData%8));
+  82   3            IR_pData++;
+  83   3          }
+  84   2          else if(IR_Time > 2250-500 && IR_Time < 2250+500)
+  85   2          {
+  86   3            IR_Data[IR_pData/8] |= (0x01<<(IR_pData%8));
+  87   3            IR_pData++;
+  88   3          }
+  89   2          else//如果接收信号出错
+  90   2          {//直接开始接受信号
+  91   3            IR_pData = 0;
+  92   3            IR_State = 1;
+  93   3          }
+  94   2          if(IR_pData >= 32)
+  95   2          {
+  96   3            IR_pData = 0;
+  97   3            if(IR_Data[0] == ~IR_Data[1] && IR_Data[2] == ~IR_Data[3])
+  98   3            {
+  99   4              IR_Address = IR_Data[0];
+ 100   4              IR_Command = IR_Data[2];
+ 101   4              IR_DataFlag = 1;
+ 102   4              Timer0_Run(1);//停止计时器
+ 103   4              IR_State = 0;//切回空闲状态
+ 104   4            }
+ 105   3            
+ 106   3          }
+ 107   2        }
+ 108   1      }
+ 109          
+ 110          
+ 111          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    416    ----
+   CONSTANT SIZE    =   ----    ----
+C51 COMPILER V9.60.7.0   IR                                                                03/17/2024 22:25:04 PAGE 3   
+
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     12    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

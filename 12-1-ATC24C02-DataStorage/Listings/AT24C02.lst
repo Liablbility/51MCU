@@ -1,0 +1,84 @@
+C51 COMPILER V9.60.7.0   AT24C02                                                           03/12/2024 20:05:04 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE AT24C02
+OBJECT MODULE PLACED IN .\Objects\AT24C02.obj
+COMPILER INVOKED BY: D:\Programing\Keil5\C51\BIN\C51.EXE AT24C02.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\L
+                    -istings\AT24C02.lst) TABS(2) OBJECT(.\Objects\AT24C02.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "I2C.h"
+   3          
+   4          #define AT24C02_ADDRESS 0xA0
+   5          
+   6          /**
+   7            * @brief AT24C02写入一个字节
+   8            * @param WordAddress 要写入字节的地址
+   9            * @param Data  要写入的数据
+  10            * @retval
+  11            **/
+  12          
+  13          void AT24C02_WriteByte(unsigned char WordAddress,Data)
+  14          {
+  15   1        unsigned char Ack;
+  16   1        I2C_Start();
+  17   1        I2C_SendByte(AT24C02_ADDRESS);
+  18   1        Ack = I2C_ReceiveAck();
+  19   1        if(Ack == 0)
+  20   1        {
+  21   2          I2C_SendByte(WordAddress);
+  22   2          Ack = I2C_ReceiveAck();
+  23   2          if(Ack == 0)
+  24   2            I2C_SendByte(Data);
+  25   2        }
+  26   1        I2C_ReceiveAck();
+  27   1        I2C_Stop();
+  28   1      }
+  29          
+  30          /**
+  31            * @brief AT24C02读取一个字节
+  32            * @param WordAddress 要读出字节的地址
+  33            * @retval Data  读出的数据
+  34            **/
+  35          
+  36          unsigned char AT24C02_ReadByte(unsigned char WordAddress)
+  37          {
+  38   1        unsigned char Data,Ack;
+  39   1        I2C_Start();
+  40   1        I2C_SendByte(AT24C02_ADDRESS);
+  41   1        Ack = I2C_ReceiveAck();
+  42   1        if(Ack == 0)
+  43   1        {
+  44   2          I2C_SendByte(WordAddress);
+  45   2          Ack = I2C_ReceiveAck();
+  46   2          if(Ack == 0)
+  47   2          {
+  48   3            I2C_Start();
+  49   3            I2C_SendByte(AT24C02_ADDRESS|0x01);
+  50   3            //发送读地址
+  51   3            I2C_ReceiveAck();
+  52   3            Data = I2C_ReceiveByte();
+  53   3            I2C_SendAck(1);
+  54   3          }
+C51 COMPILER V9.60.7.0   AT24C02                                                           03/12/2024 20:05:04 PAGE 2   
+
+  55   2        }
+  56   1        I2C_Stop();
+  57   1        return Data;
+  58   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     96    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

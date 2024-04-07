@@ -1,0 +1,46 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              03/11/2024 21:19:28 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Programing\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\List
+                    -ings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Delay.h"
+   3          #include "Key.h"
+   4          #include "DigitalTube.h"
+   5          #include "Buzzer.h"
+   6          
+   7          unsigned char KeyNum;
+   8          
+   9          
+  10          void main()
+  11          {
+  12   1        while(1)
+  13   1        {
+  14   2          KeyNum = Key();
+  15   2          Display(1,KeyNum);
+  16   2          if(KeyNum)
+  17   2          {
+  18   3            BuzzerSound(100);
+  19   3            Display(1,KeyNum);
+  20   3          }
+  21   2        }
+  22   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     37    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

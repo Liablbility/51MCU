@@ -1,0 +1,65 @@
+C51 COMPILER V9.60.7.0   DIGITALTUBE                                                       03/15/2024 17:03:46 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DIGITALTUBE
+OBJECT MODULE PLACED IN .\Objects\DigitalTube.obj
+COMPILER INVOKED BY: D:\Programing\Keil5\C51\BIN\C51.EXE DigitalTube.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\DigitalTube.lst) TABS(2) OBJECT(.\Objects\DigitalTube.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Delay.h"
+   3          
+   4          unsigned char DigitalTubeBuf[9]={
+   5          0,10,10,10,10,10,10,10,10
+   6          };
+   7          unsigned char NumCode[] = {
+   8          0x3F,0x06,0x5B,0x4F,0x66,
+   9          0x6D,0x7D,0x07,0x7F,0x6F,
+  10          0x00,0x40//横杠
+  11          };
+  12          
+  13          void DigitalTube_SetBuf(unsigned char Location,int Number)
+  14          {
+  15   1        DigitalTubeBuf[Location] = Number;
+  16   1      }
+  17          
+  18          void DigitalTube(unsigned char Location,int Number)
+  19          {
+  20   1        P0 = 0x00;
+  21   1        switch(Location){
+  22   2          case 1:P2_4=1;P2_3=1;P2_2=1;break;
+  23   2          case 2:P2_4=1;P2_3=1;P2_2=0;break;
+  24   2          case 3:P2_4=1;P2_3=0;P2_2=1;break;
+  25   2          case 4:P2_4=1;P2_3=0;P2_2=0;break;
+  26   2          case 5:P2_4=0;P2_3=1;P2_2=1;break;
+  27   2          case 6:P2_4=0;P2_3=1;P2_2=0;break;
+  28   2          case 7:P2_4=0;P2_3=0;P2_2=1;break;
+  29   2          case 8:P2_4=0;P2_3=0;P2_2=0;break;
+  30   2        }
+  31   1        P0 = NumCode[Number];
+  32   1      }
+  33          
+  34          void DigitalTubeLoop()//定时器扫描数码管
+  35          {
+  36   1        static unsigned char i=1;
+  37   1        DigitalTube(i,DigitalTubeBuf[i]);
+  38   1        i++;
+  39   1        if(i >= 9)
+  40   1          i = 1;
+  41   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    138    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     22    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
